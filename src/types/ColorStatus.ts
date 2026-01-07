@@ -1,1 +1,0 @@
-export type ColorStatus =  "normal" | "error" | "success"
