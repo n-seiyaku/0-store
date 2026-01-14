@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getBrands } from '../lib/drinkStore'
-import { Brand } from '../type/brand.types'
+import { getBrands } from '@/src/lib/drinkStore'
+import { Brand } from '@/src/lib/db/type'
 import Link from 'next/link'
-import { toSlug } from '../utils/toSlug'
+import { toSlug } from '@/src/utils/toSlug'
 
 export default function HomePage() {
     const [brands, setBrands] = useState<Brand[]>([])
