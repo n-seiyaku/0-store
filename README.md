@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 0-Store
 
-## Getting Started
+A modern, full-featured online drink ordering application built for **0 Store**, leveraging the power of **Next.js 16** and **AI integration**. This system streamlines the ordering process with a premium user interface and efficient backend management.
 
-First, run the development server:
+![Project Banner](placeholder-image-url)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📖 Introduction
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**0-Store** is designed to provide users with a seamless experience when ordering their favorite drinks. Focus on aesthetics, performance, and usability, the application allows customers to browse the menu, customize their orders (toppings, sugar, ice levels), and place orders easily.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **🛍️ Smart Menu System**: Interactive product listing with categories and detailed descriptions.
+- **🎨 Drink Customization**: Full control over drink options including:
+    - Sugar levels (0% - 100%)
+    - Ice levels (0% - 100%)
+    - Multiple topping selections
+- **🛒 Dynamic Shopping Cart**:
+    - Real-time price calculation.
+    - Easy edits to existing items in the cart.
+- **💳 Streamlined Checkout**:
+    - Integrated delivery information form.
+    - Support for multiple payment methods (COD, etc.).
+    - Order summary and discount code application.
+- **🤖 AI Powered**: Integrated with **Google Generative AI** for smart features.
+- **📱 Responsive Design**: Fully responsive UI built with **Tailwind CSS v4**, ensuring a premium experience on mobile, tablet, and desktop.
+- **⚡ High Performance**: Utilizing Next.js 16 App Router and Server Actions for optimal speed and SEO.
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+This project is built using the latest web technologies:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) (via [Neon](https://neon.tech/))
+- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
+- **AI**: [Google Generative AI SDK](https://ai.google.dev/)
+- **Icons**: Material Symbols
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+Follow these steps to set up the project locally.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Node.js**: Version 18 or higher
+- **Package Manager**: pnpm (recommended), npm, or yarn
+
+### Installation
+
+1. **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/n-seiyaku/0-store.git
+    cd 0-store
+    ```
+
+2. **Install dependencies:**
+
+    ```bash
+    pnpm install
+    ```
+
+3. **Environment Setup:**
+
+    Create a `.env.local` file in the root directory and add the necessary environment variables (Database URL, Google AI Key, etc.):
+
+    ```bash
+    cp .env.example .env.local
+    ```
+
+    _Make sure to fill in your `DATABASE_URL` and `GOOGLE_AI_API_KEY`._
+
+4. **Database Setup:**
+
+    Push the schema to your Neon database:
+
+    ```bash
+    pnpm db:push
+    ```
+
+5. **Run the development server:**
+
+    ```bash
+    pnpm dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 📸 Screenshots
+
+|           Home Page            |   Menu & Customization    |             Checkout              |
+| :----------------------------: | :-----------------------: | :-------------------------------: |
+| ![Home Page](placeholder-home) | ![Menu](placeholder-menu) | ![Checkout](placeholder-checkout) |
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+Built with ❤️ by [Nhan]
