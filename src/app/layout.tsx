@@ -4,7 +4,7 @@ import './globals.css'
 import Header from '../components/Header'
 import 'material-symbols'
 import { CartProvider } from '../context/CartContext'
-import Cart from '../components/Cart'
+import Cart from '../components/cart/Cart'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',

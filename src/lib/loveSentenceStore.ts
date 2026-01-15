@@ -1,30 +1,40 @@
 'use server'
 
-import { sql } from './db/neon'
+import { db } from './db/drizzle'
+import { LoveSentence } from './db/type'
+import { eq } from 'drizzle-orm'
+import { loveSentences } from './db/schema'
 
-export const getAllSentences = async (sentence: string) => {
+export const getAllSentences = async (
+    sentence: string,
+): Promise<LoveSentence[]> => {
     try {
-        const res =
-            await sql`SELECT * FROM love_sentences WHERE sentence ILIKE ${sentence.trim()}`
+        const res = await db
+            .select()
+            .from(loveSentences)
+            .where(eq(loveSentences.sentence, sentence))
 
-        return res
+        return res as LoveSentence[]
     } catch (error) {
-        console.log(error)
+        console.error(error)
+        return []
     }
 }
 
 export const storeLoveSentence = async (
     sentence: string,
-    is_loving_caring: boolean,
+    isLovingCaring: boolean,
     reason: string,
 ) => {
     try {
-        const res =
-            await sql`INSERT INTO love_sentences (sentence, is_loving_caring, reason)
-            VALUES (${sentence.trim()}, ${is_loving_caring}, ${reason})`
+        const res = await db.insert(loveSentences).values({
+            sentence: sentence.trim(),
+            isLovingCaring: isLovingCaring,
+            reason: reason,
+        })
 
         return res
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }

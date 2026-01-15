@@ -9,6 +9,8 @@ import {
     serial,
     unique,
     index,
+    jsonb,
+    pgEnum,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -97,5 +99,49 @@ export const toppingsRelations = relations(toppings, ({ one }) => ({
     brand: one(brands, {
         fields: [toppings.brandId],
         references: [brands.id],
+    }),
+}))
+
+// --- 6. Bảng Orders ---
+export const discountTypeEnum = pgEnum('discount_type', ['percentage', 'fixed'])
+
+export const orders = pgTable('orders', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    customerName: text('customer_name').notNull(),
+    customerPhone: text('customer_phone').notNull(),
+    customerEmail: text('customer_email'),
+    shippingAddress: text('shipping_address').notNull(),
+    shippingNote: text('shipping_note'),
+    totalAmount: integer('total_amount').notNull(),
+    paymentMethod: text('payment_method').notNull(),
+    discount: integer('discount').notNull().default(0),
+    discountType: discountTypeEnum('discount_type').notNull(),
+    status: text('status').notNull().default('pending'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})
+
+export const ordersRelations = relations(orders, ({ many }) => ({
+    items: many(orderItems),
+}))
+
+// --- 7. Bảng Order Items ---
+export const orderItems = pgTable('order_items', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    orderId: uuid('order_id')
+        .notNull()
+        .references(() => orders.id, { onDelete: 'cascade' }),
+    drinkName: text('drink_name').notNull(),
+    drinkImage: text('drink_image'),
+    quantity: integer('quantity').notNull(),
+    unitPrice: integer('unit_price').notNull(),
+    totalPrice: integer('total_price').notNull(),
+    toppings: jsonb('toppings').$type<any[]>().default([]),
+    note: text('note'),
+})
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+    order: one(orders, {
+        fields: [orderItems.orderId],
+        references: [orders.id],
     }),
 }))

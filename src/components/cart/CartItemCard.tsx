@@ -42,12 +42,12 @@ export function CartItemCard({
                                 key={topping.id}
                                 className="mt-1 flex items-center justify-between"
                             >
-                                <p className="text-sm font-medium text-blue-400">
-                                    {topping.name} x 1
-                                </p>
-                                <p className="text-sm font-medium text-blue-400">
-                                    {(topping.price || 0).toLocaleString()} VND
-                                </p>
+                                <span className="text-sm font-medium text-blue-400">
+                                    + {topping.name}
+                                </span>
+                                <span className="text-sm font-medium text-blue-400">
+                                    {topping.price.toLocaleString()} VND
+                                </span>
                             </div>
                         ))}
                         <p className="text-md mt-1 flex items-center justify-between font-medium">

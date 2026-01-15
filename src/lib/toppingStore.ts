@@ -1,9 +1,9 @@
 'use server'
 
 import { db } from './db/drizzle'
-import { toppings } from './db/schema'
 import { Topping } from './db/type'
 import { eq } from 'drizzle-orm'
+import { toppings } from './db/schema'
 
 export const getAllToppingsByBrandId = async (
     brandId: string,
@@ -13,7 +13,7 @@ export const getAllToppingsByBrandId = async (
             .select()
             .from(toppings)
             .where(eq(toppings.brandId, brandId))
-        return res
+        return res as Topping[]
     } catch (error) {
         console.error('Error fetching toppings:', error)
         return []

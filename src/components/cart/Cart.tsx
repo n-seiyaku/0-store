@@ -1,15 +1,15 @@
 'use client'
 
 import { useCart } from '@/src/context/CartContext'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { CartItem } from '@/src/type/cart-item.types'
-import { Drink, Topping } from '@/src/lib/db/type'
+import { Drink, Topping, Category } from '@/src/lib/db/type'
 import { getCategoryById } from '@/src/lib/drinkStore'
 import { getAllToppingsByBrandId } from '@/src/lib/toppingStore'
 import Addition from '@/src/app/buy/[brandName]/components/Addition'
-import { CartItemCard } from './cart/CartItemCard'
-import { CartEmptyState } from './cart/CartEmptyState'
-import { CartSummary } from './cart/CartSummary'
+import { CartItemCard } from './CartItemCard'
+import { CartEmptyState } from './CartEmptyState'
+import { CartSummary } from './CartSummary'
 
 export default function Cart() {
     const {
@@ -25,13 +25,27 @@ export default function Cart() {
     const [availableToppings, setAvailableToppings] = useState<Topping[]>([])
     const [currentDrink, setCurrentDrink] = useState<Drink | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const categoryCache = useRef<Map<string, Category>>(new Map())
+    const toppingsCache = useRef<Map<string, Topping[]>>(new Map())
 
     const handleEdit = async (item: CartItem) => {
         setIsLoading(true)
         try {
-            const category = await getCategoryById(item.categoryId)
+            let category = categoryCache.current.get(item.categoryId)
+            if (!category) {
+                category = await getCategoryById(item.categoryId)
+                if (category) {
+                    categoryCache.current.set(item.categoryId, category)
+                }
+            }
+
             if (category) {
-                const toppings = await getAllToppingsByBrandId(category.brandId)
+                let toppings = toppingsCache.current.get(category.brandId)
+                if (!toppings) {
+                    toppings = await getAllToppingsByBrandId(category.brandId)
+                    toppingsCache.current.set(category.brandId, toppings)
+                }
+
                 setCurrentDrink(item)
                 setAvailableToppings(toppings)
                 setEditingItem(item)

@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { OpenRouter } from '@openrouter/sdk'
 import { getAllSentences, storeLoveSentence } from '@/src/lib/loveSentenceStore'
+import camelcaseKeys from 'camelcase-keys'
 
 export async function POST(req: Request) {
     const { sentence } = await req.json()
@@ -12,10 +13,11 @@ export async function POST(req: Request) {
     const res = await getAllSentences(sentence)
 
     if (res !== undefined && res.length !== 0) {
-        return NextResponse.json(
-            { error: 'Duplicate sentence' },
-            { status: 400 },
-        )
+        return NextResponse.json({
+            isLovingCaring: false,
+            reason: 'Mã này xài rồi! Đổi mã khác đi',
+            reasonSummary: 'Mã này xài rồi! Đổi mã khác đi',
+        })
     }
 
     const apiKey = process.env.OPENROUTER_API_KEY
@@ -59,13 +61,16 @@ export async function POST(req: Request) {
             const cleanText = result.replace(/```json|```/g, '').trim()
             const data = JSON.parse(cleanText)
 
-            await storeLoveSentence(
-                sentence,
-                data.is_loving_caring,
-                data.reason,
-            )
+            // Store data in logic in the background to speed up response
+            after(async () => {
+                await storeLoveSentence(
+                    sentence,
+                    data.is_loving_caring,
+                    data.reason,
+                )
+            })
 
-            return NextResponse.json({ data })
+            return NextResponse.json(camelcaseKeys(data, { deep: true }))
         }
 
         return NextResponse.json(
