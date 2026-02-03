@@ -47,6 +47,7 @@ export const categories = pgTable(
             .notNull()
             .references(() => brands.id, { onDelete: 'cascade' }),
         name: text('name').notNull(),
+        hasTopping: boolean('has_topping').notNull().default(true),
     },
     (t) => [unique('uq_brand_category').on(t.brandId, t.name)],
 )

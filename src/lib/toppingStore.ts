@@ -19,3 +19,13 @@ export const getAllToppingsByBrandId = async (
         return []
     }
 }
+
+export const getAllToppings = async (): Promise<Topping[]> => {
+    try {
+        const res = await db.select().from(toppings)
+        return res as Topping[]
+    } catch (error) {
+        console.error('Error fetching all toppings:', error)
+        return []
+    }
+}

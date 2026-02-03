@@ -1,7 +1,7 @@
 'use client'
 
 import { useCart } from '@/src/context/CartContext'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { CartItem } from '@/src/type/cart-item.types'
 import { Drink, Topping, Category } from '@/src/lib/db/type'
 import { getCategoryById } from '@/src/lib/drinkStore'
@@ -24,9 +24,17 @@ export default function Cart() {
     const [editingItem, setEditingItem] = useState<CartItem | null>(null)
     const [availableToppings, setAvailableToppings] = useState<Topping[]>([])
     const [currentDrink, setCurrentDrink] = useState<Drink | null>(null)
+    const [hasTopping, setHasTopping] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const categoryCache = useRef<Map<string, Category>>(new Map())
     const toppingsCache = useRef<Map<string, Topping[]>>(new Map())
+
+    useEffect(() => {
+        if (!isOpen) {
+            setEditingItem(null)
+            setCurrentDrink(null)
+        }
+    }, [isOpen])
 
     const handleEdit = async (item: CartItem) => {
         setIsLoading(true)
@@ -48,6 +56,7 @@ export default function Cart() {
 
                 setCurrentDrink(item)
                 setAvailableToppings(toppings)
+                setHasTopping(category.hasTopping)
                 setEditingItem(item)
             }
         } catch (error) {
@@ -124,6 +133,7 @@ export default function Cart() {
                             toppings={availableToppings}
                             initialItem={editingItem || undefined}
                             onClose={() => setEditingItem(null)}
+                            hasTopping={hasTopping}
                         />
                     </div>
                 )}

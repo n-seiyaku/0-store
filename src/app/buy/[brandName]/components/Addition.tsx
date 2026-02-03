@@ -10,6 +10,7 @@ interface AdditionProps {
     drink: Drink
     onClose: () => void
     initialItem?: CartItem
+    hasTopping: boolean
 }
 
 export default function Addition({
@@ -17,6 +18,7 @@ export default function Addition({
     drink,
     onClose,
     initialItem,
+    hasTopping,
 }: AdditionProps) {
     const [size, setSize] = useState(initialItem?.size || 'medium')
     const [ice, setIce] = useState(initialItem?.ice || 'Đá bình thường')
@@ -161,59 +163,62 @@ export default function Addition({
                 </div>
 
                 {/* Toppings Section */}
-                <div className="mb-6">
-                    <span className="mb-3 block text-sm font-medium text-gray-400">
-                        Topping
-                    </span>
-                    <div className="flex flex-col gap-2">
-                        {toppings.map((topping) => (
-                            <div
-                                key={topping.id}
-                                onClick={() => toggleTopping(topping)}
-                                className={`flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 transition-all ${
-                                    selectedToppings.some(
-                                        (selected) =>
-                                            selected.id === topping.id,
-                                    )
-                                        ? 'border-blue-500 bg-blue-600/10'
-                                        : 'border-gray-800/50 bg-gray-800/30 hover:border-gray-700 hover:bg-gray-800/50'
-                                }`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                                            selectedToppings.some(
-                                                (selected) =>
-                                                    selected.id === topping.id,
-                                            )
-                                                ? 'border-blue-600 bg-blue-600 text-white'
-                                                : 'border-gray-600'
-                                        }`}
-                                    >
-                                        {selectedToppings.some(
+                {hasTopping && (
+                    <div className="mb-6">
+                        <span className="mb-3 block text-sm font-medium text-gray-400">
+                            Topping
+                        </span>
+                        <div className="flex flex-col gap-2">
+                            {toppings.map((topping) => (
+                                <div
+                                    key={topping.id}
+                                    onClick={() => toggleTopping(topping)}
+                                    className={`flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 transition-all ${
+                                        selectedToppings.some(
                                             (selected) =>
                                                 selected.id === topping.id,
-                                        ) && (
-                                            <span className="material-symbols-rounded text-sm font-bold">
-                                                check
-                                            </span>
-                                        )}
+                                        )
+                                            ? 'border-blue-500 bg-blue-600/10'
+                                            : 'border-gray-800/50 bg-gray-800/30 hover:border-gray-700 hover:bg-gray-800/50'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className={`flex h-5 w-5 items-center justify-center rounded-md border ${
+                                                selectedToppings.some(
+                                                    (selected) =>
+                                                        selected.id ===
+                                                        topping.id,
+                                                )
+                                                    ? 'border-blue-600 bg-blue-600 text-white'
+                                                    : 'border-gray-600'
+                                            }`}
+                                        >
+                                            {selectedToppings.some(
+                                                (selected) =>
+                                                    selected.id === topping.id,
+                                            ) && (
+                                                <span className="material-symbols-rounded text-sm font-bold">
+                                                    check
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className="font-medium text-gray-200">
+                                            {topping.name}
+                                        </span>
                                     </div>
-                                    <span className="font-medium text-gray-200">
-                                        {topping.name}
+                                    <span className="text-sm font-semibold text-gray-400">
+                                        +
+                                        {Number(topping.price).toLocaleString(
+                                            'vi-VN',
+                                        )}
+                                        đ
                                     </span>
                                 </div>
-                                <span className="text-sm font-semibold text-gray-400">
-                                    +
-                                    {Number(topping.price).toLocaleString(
-                                        'vi-VN',
-                                    )}
-                                    đ
-                                </span>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Note Section */}
                 <div>

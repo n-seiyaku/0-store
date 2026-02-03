@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useCart } from '../context/CartContext'
+import SearchInput from './SearchInput'
 
 export default function Header() {
     const { totalItems, toggleCart } = useCart()
@@ -47,11 +48,7 @@ export default function Header() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
-                    <button className="group flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-                        <span className="material-symbols-outlined text-xl">
-                            search
-                        </span>
-                    </button>
+                    <SearchInput />
                     <button
                         onClick={() => toggleCart()}
                         className="group relative flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-all hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"

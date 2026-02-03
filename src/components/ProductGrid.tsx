@@ -1,23 +1,29 @@
 import { Drink } from '@/src/lib/db/type'
 
-interface ProductGridProps {
-    drinks: Drink[]
-    selectedCategory: string
+export interface ProductGridProps<T extends Drink> {
+    drinks: T[]
     isLoading?: boolean
-    onSelectProduct: (drink: Drink) => void
+    isSidebar?: boolean
+    onSelectProduct: (drink: T) => void
 }
 
-export default function ProductGrid({
+export default function ProductGrid<T extends Drink>({
     drinks,
-    selectedCategory,
     isLoading,
+    isSidebar,
     onSelectProduct,
-}: ProductGridProps) {
+}: ProductGridProps<T>) {
     if (isLoading) {
         return (
             <div className="flex-1">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {[...Array(6)].map((_, index) => (
+                <div
+                    className={
+                        isSidebar
+                            ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'
+                            : 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4'
+                    }
+                >
+                    {[...Array(isSidebar ? 6 : 8)].map((_, index) => (
                         <div
                             key={index}
                             className="rounded-2xl border border-gray-800 bg-gray-900/40 p-4"
@@ -47,7 +53,13 @@ export default function ProductGrid({
 
     return (
         <div className="flex-1">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div
+                className={
+                    isSidebar
+                        ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'
+                        : 'grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4'
+                }
+            >
                 {drinks.map((drink) => (
                     <div
                         key={drink.id}
@@ -107,15 +119,6 @@ export default function ProductGrid({
                     </div>
                 ))}
             </div>
-
-            {drinks.length === 0 && selectedCategory && (
-                <div className="flex h-64 flex-col items-center justify-center text-center text-gray-500">
-                    <span className="material-symbols-outlined mb-2 text-4xl opacity-20">
-                        inbox
-                    </span>
-                    <p>Không có sản phẩm nào trong danh mục này.</p>
-                </div>
-            )}
         </div>
     )
 }

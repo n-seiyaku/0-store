@@ -4,7 +4,7 @@ import { Drink, Topping, Category } from '@/src/lib/db/type'
 import { useState } from 'react'
 import { getDrinksByCategory } from '@/src/lib/drinkStore'
 import Sidebar from './Sidebar'
-import ProductGrid from './ProductGrid'
+import ProductGrid from '@/src/components/ProductGrid'
 import Addition from './Addition'
 
 interface BuyClientProps {
@@ -53,8 +53,8 @@ export default function BuyClient({
                         />
                         <ProductGrid
                             drinks={drinks}
-                            selectedCategory={selectedCategory}
                             isLoading={isDrinksLoading}
+                            isSidebar
                             onSelectProduct={setSelectedDrink}
                         />
                     </div>
@@ -76,6 +76,11 @@ export default function BuyClient({
                             drink={selectedDrink}
                             toppings={toppings}
                             onClose={() => setSelectedDrink(null)}
+                            hasTopping={
+                                categories.find(
+                                    (c) => c.id === selectedDrink.categoryId,
+                                )?.hasTopping ?? true
+                            }
                         />
                     </div>
                 </div>

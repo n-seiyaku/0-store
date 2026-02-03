@@ -1,5 +1,7 @@
 import HomePage from './HomePage'
+import { getBrands } from '@/src/lib/drinkStore'
 
 export default async function Home() {
-    return <HomePage />
+    const brands = await getBrands()
+    return <HomePage brands={brands} />
 }
