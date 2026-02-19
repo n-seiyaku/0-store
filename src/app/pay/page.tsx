@@ -1,14 +1,19 @@
 'use client'
 
 import { useCart } from '@/src/context/CartContext'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ContactForm } from './components/ContactForm'
 import { ShippingForm } from './components/ShippingForm'
 import { PaymentMethod } from './components/PaymentMethod'
 import { OrderSummary } from './components/OrderSummary'
+import { LoveUnlockedModal } from './components/LoveUnlockedModal'
 import { createOrder } from './actions'
 import { useRouter } from 'next/navigation'
+
+// Validation error types
+type ContactErrors = Partial<Record<'name' | 'phone' | 'email', string>>
+type ShippingErrors = Partial<Record<'address' | 'note', string>>
 
 export default function PayPage() {
     const { cart, subTotal, clearCart } = useCart()
@@ -26,16 +31,72 @@ export default function PayPage() {
         note: '',
     })
 
+    // Inline validation errors
+    const [contactErrors, setContactErrors] = useState<ContactErrors>({})
+    const [shippingErrors, setShippingErrors] = useState<ShippingErrors>({})
+
     const [discountData, setDiscountData] = useState<{
         value: number
         type: 'percentage' | 'fixed'
+        code: string
     } | null>(null)
 
-    const handleOrder = async () => {
-        if (!contactInfo.name || !contactInfo.phone || !shippingInfo.address) {
-            alert('Vui lòng điền đầy đủ thông tin liên hệ và địa chỉ!')
-            return
+    // Hiện phương thức thanh toán đặc biệt sau khi love-check thành công
+    const [showLovePayment, setShowLovePayment] = useState(false)
+    // Hiện modal thông báo mở khóa
+    const [showLoveModal, setShowLoveModal] = useState(false)
+
+    // Callback khi love-check thành công: mở modal trước, sau khi đóng mới unlock
+    const handleLoveUnlocked = () => {
+        setShowLoveModal(true)
+    }
+
+    // Khi user đóng modal: ẩn modal và mở phương thức mới
+    const handleModalClose = () => {
+        setShowLoveModal(false)
+        setShowLovePayment(true)
+    }
+
+    // Validate all fields and set inline errors, returns true if valid
+    const validate = (): boolean => {
+        const newContactErrors: ContactErrors = {}
+        const newShippingErrors: ShippingErrors = {}
+        let valid = true
+
+        if (!contactInfo.name.trim()) {
+            newContactErrors.name = 'Vui lòng nhập họ và tên'
+            valid = false
         }
+
+        if (!contactInfo.phone.trim()) {
+            newContactErrors.phone = 'Vui lòng nhập số điện thoại'
+            valid = false
+        } else if (
+            !/^[0-9]{9,11}$/.test(contactInfo.phone.replace(/\s/g, ''))
+        ) {
+            newContactErrors.phone = 'Số điện thoại không hợp lệ'
+            valid = false
+        }
+
+        if (!shippingInfo.address.trim()) {
+            newShippingErrors.address = 'Vui lòng nhập địa chỉ giao hàng'
+            valid = false
+        }
+
+        setContactErrors(newContactErrors)
+        setShippingErrors(newShippingErrors)
+
+        // Scroll to first error
+        if (!valid) {
+            const firstError = document.querySelector('[data-error="true"]')
+            firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+
+        return valid
+    }
+
+    const handleOrder = async () => {
+        if (!validate()) return
 
         const orderPayload = {
             customerName: contactInfo.name,
@@ -48,16 +109,21 @@ export default function PayPage() {
             discountType: discountData ? discountData.type : 'fixed',
             totalAmount: subTotal,
             items: cart,
+            discountCode: discountData ? discountData.code : '',
         }
 
         const res = await createOrder(orderPayload)
 
         if (res.success) {
             clearCart()
-            alert('Đặt hàng thành công! Mã đơn: ' + res.orderId)
-            router.push('/')
+            // Redirect sang trang thành công kèm mã đơn hàng
+            router.push(`/pay/success?orderId=${res.orderId}`)
         } else {
-            alert('Có lỗi xảy ra: ' + res.error)
+            // Show server error under the order button via a generic contact error
+            setContactErrors((prev) => ({
+                ...prev,
+                name: `Lỗi hệ thống: ${res.error}`,
+            }))
         }
     }
 
@@ -83,21 +149,54 @@ export default function PayPage() {
                     {/* Left Column - Forms */}
                     <div className="space-y-6 lg:col-span-8">
                         {/* Contact Info */}
-                        <ContactForm
-                            value={contactInfo}
-                            onChange={setContactInfo}
-                        />
+                        <div
+                            data-error={
+                                Object.keys(contactErrors).length > 0
+                                    ? 'true'
+                                    : 'false'
+                            }
+                        >
+                            <ContactForm
+                                value={contactInfo}
+                                onChange={setContactInfo}
+                                errors={contactErrors}
+                                onClearError={(field) =>
+                                    setContactErrors((prev) => {
+                                        const next = { ...prev }
+                                        delete next[field]
+                                        return next
+                                    })
+                                }
+                            />
+                        </div>
 
                         {/* Shipping Address */}
-                        <ShippingForm
-                            value={shippingInfo}
-                            onChange={setShippingInfo}
-                        />
+                        <div
+                            data-error={
+                                Object.keys(shippingErrors).length > 0
+                                    ? 'true'
+                                    : 'false'
+                            }
+                        >
+                            <ShippingForm
+                                value={shippingInfo}
+                                onChange={setShippingInfo}
+                                errors={shippingErrors}
+                                onClearError={(field) =>
+                                    setShippingErrors((prev) => {
+                                        const next = { ...prev }
+                                        delete next[field]
+                                        return next
+                                    })
+                                }
+                            />
+                        </div>
 
                         {/* Payment Method */}
                         <PaymentMethod
                             selectedMethod={paymentMethod}
                             onSelect={setPaymentMethod}
+                            showLoveOption={showLovePayment}
                         />
                     </div>
 
@@ -108,10 +207,14 @@ export default function PayPage() {
                             subTotal={subTotal}
                             onApplyDiscount={setDiscountData}
                             onOrder={handleOrder}
+                            onLoveUnlocked={handleLoveUnlocked}
                         />
                     </div>
                 </div>
             </div>
+
+            {/* Modal thông báo mở khóa phương thức thanh toán */}
+            {showLoveModal && <LoveUnlockedModal onClose={handleModalClose} />}
         </div>
     )
 }

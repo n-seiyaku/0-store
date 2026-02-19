@@ -1,19 +1,24 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Roboto, Roboto_Mono } from 'next/font/google'
 import './globals.css'
 import Header from '../components/Header'
 import 'material-symbols'
 import { CartProvider } from '../context/CartContext'
 import Cart from '../components/cart/Cart'
 
-const geistSans = Geist({
-    variable: '--font-geist-sans',
-    subsets: ['latin'],
+// Roboto sans-serif font
+const roboto = Roboto({
+    variable: '--font-roboto',
+    subsets: ['latin', 'vietnamese'],
+    weight: ['300', '400', '500', '700'],
+    display: 'swap',
 })
 
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
-    subsets: ['latin'],
+// Roboto Mono font
+const robotoMono = Roboto_Mono({
+    variable: '--font-roboto-mono',
+    subsets: ['latin', 'vietnamese'],
+    display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -29,7 +34,7 @@ export default function RootLayout({
     return (
         <html lang="en" className="dark">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${roboto.variable} ${robotoMono.variable} antialiased`}
             >
                 <CartProvider>
                     <Header />

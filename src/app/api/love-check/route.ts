@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     try {
         const openRouter = new OpenRouter({ apiKey: apiKey })
         const response = await openRouter.chat.send({
-            model: 'xiaomi/mimo-v2-flash:free',
+            model: 'stepfun/step-3.5-flash:free',
             messages: [
                 {
                     role: 'user',

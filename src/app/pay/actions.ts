@@ -3,6 +3,7 @@
 import { db } from '@/src/lib/db/drizzle'
 import { orders, orderItems } from '@/src/lib/db/schema'
 import { CartItem } from '@/src/type/cart-item.types'
+import { sendTelegramNotification } from '@/src/lib/telegram'
 
 interface CreateOrderParams {
     customerName: string
@@ -15,6 +16,7 @@ interface CreateOrderParams {
     discountType: 'percentage' | 'fixed'
     totalAmount: number
     items: CartItem[]
+    discountCode?: string
 }
 
 export const createOrder = async (orderData: CreateOrderParams) => {
@@ -50,6 +52,34 @@ export const createOrder = async (orderData: CreateOrderParams) => {
             }))
 
             await db.insert(orderItems).values(itemsToInsert)
+
+            // Send Telegram Notification
+            const message = `
+<b>🔥 Có đơn hàng mới!</b>
+
+<b>Khách hàng:</b> ${orderData.customerName}
+<b>SĐT:</b> ${orderData.customerPhone}
+<b>Địa chỉ:</b> ${orderData.shippingAddress}
+<b>Tổng tiền:</b> ${orderData.totalAmount.toLocaleString()}
+
+<b>Chi tiết đơn hàng:</b>
+${orderData.items
+    .map(
+        (item) =>
+            `- ${item.name} (x${item.quantity}) - ${item.total.toLocaleString()}${
+                item.toppings.length > 0
+                    ? `\n  + Topping: ${item.toppings
+                          .map((t) => t.name)
+                          .join(', ')}`
+                    : ''
+            }`,
+    )
+    .join('\n')}
+<b>Ghi chú:</b> ${orderData.shippingNote} 
+<b>Mã giảm giá:</b> ${orderData.discountCode}
+`
+            // Fire and forget (or await if you want to ensure it sends before returning)
+            await sendTelegramNotification(message)
         }
 
         return { success: true, orderId: newOrder.id }
