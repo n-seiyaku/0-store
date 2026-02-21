@@ -1,152 +1,117 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Brand } from '@/src/lib/db/type'
 import Link from 'next/link'
 import { toSlug } from '@/src/utils/toSlug'
-import Image from 'next/image'
 
 interface HomePageProps {
     brands: Brand[]
 }
 
+// Rotating gradient accent per brand card
+const CARD_ACCENTS = [
+    { ring: 'hover:ring-pink-400/30', dot: 'bg-pink-400', glow: 'group-hover:shadow-pink-500/10' },
+    { ring: 'hover:ring-violet-400/30', dot: 'bg-violet-400', glow: 'group-hover:shadow-violet-500/10' },
+    { ring: 'hover:ring-sky-400/30', dot: 'bg-sky-400', glow: 'group-hover:shadow-sky-500/10' },
+    { ring: 'hover:ring-emerald-400/30', dot: 'bg-emerald-400', glow: 'group-hover:shadow-emerald-500/10' },
+    { ring: 'hover:ring-amber-400/30', dot: 'bg-amber-400', glow: 'group-hover:shadow-amber-500/10' },
+    { ring: 'hover:ring-rose-400/30', dot: 'bg-rose-400', glow: 'group-hover:shadow-rose-500/10' },
+] as const
+
+const BRAND_EMOJI = ['🧋', '🍵', '☕', '🍹', '🧃', '🥤']
+
+// A few short love lines shown randomly in the greeting
+const LOVE_LINES = [
+    'Hôm nay em muốn uống gì?',
+    'Uống gì chọn đi ❤️',
+]
+
 export default function HomePage({ brands }: HomePageProps) {
+    // Default to first line on SSR, pick randomly on client to avoid hydration mismatch
+    const [line, setLine] = useState(LOVE_LINES[0])
+
+    useEffect(() => {
+        setLine(LOVE_LINES[Math.floor(Math.random() * LOVE_LINES.length)])
+    }, [])
+
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-            {/* Hero Section */}
-            <section className="relative h-[80vh] w-full overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-r from-gray-900 to-gray-800">
-                    <Image
-                        src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=2521&auto=format&fit=crop"
-                        alt="Hero Background"
-                        fill
-                        className="object-cover opacity-40 mix-blend-overlay"
-                        priority
-                    />
+        <div className="min-h-screen bg-[#081d35]">
+
+            {/* ─── Greeting ─── */}
+            <section className="relative overflow-hidden px-4 pt-24 pb-16 text-center">
+                {/* Soft background glow */}
+                <div className="pointer-events-none absolute inset-0">
+                    <div className="absolute top-0 left-1/2 h-72 w-[600px] -translate-x-1/2 rounded-full bg-pink-500/10 blur-[100px]" />
+                    <div className="absolute top-12 left-1/2 h-48 w-[400px] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
                 </div>
-                <div className="relative flex h-full items-center justify-center px-4 text-center">
-                    <div className="max-w-3xl space-y-6">
-                        <h1 className="text-5xl font-bold tracking-tight text-white md:text-7xl">
-                            Thưởng thức hương vị
-                            <br />
-                            <span className="bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                                Trà Sữa Đậm Đà
-                            </span>
-                        </h1>
-                        <p className="mx-auto max-w-2xl text-lg text-gray-300 md:text-xl">
-                            Trải nghiệm menu đa dạng với nguyên liệu tươi ngon
-                            nhất. Giao hàng nhanh chóng, đặt món dễ dàng ngay
-                            tại nhà.
-                        </p>
-                        <div className="flex justify-center gap-4 pt-4">
-                            <Link
-                                href="#menu"
-                                className="rounded-full bg-blue-600 px-8 py-3 font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30"
-                            >
-                                Đặt Ngay
-                            </Link>
-                            <Link
-                                href="/about"
-                                className="rounded-full border border-gray-600 bg-white/5 px-8 py-3 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10"
-                            >
-                                Về Chúng Tôi
-                            </Link>
-                        </div>
+
+                <div className="relative mx-auto max-w-xl">
+                    {/* Small heart badge */}
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pink-400/20 bg-pink-500/10 px-4 py-1.5 text-sm text-pink-300">
+                        <span>🫶</span>
+                        <span className="font-medium">Làm với yêu thương</span>
                     </div>
+
+                    {/* Main headline */}
+                    <h1 className="mb-4 text-4xl font-bold leading-tight text-white md:text-5xl">
+                        Trà sữa 0 đồng,{' '}
+                        <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                            tặng cho bống hồng nhà tui
+                        </span>
+                    </h1>
+
+                    {/* Tagline */}
+                    <p className="text-base leading-relaxed text-blue-100/50 md:text-lg">
+                        {line}
+                    </p>
                 </div>
             </section>
 
-            {/* Menu Section */}
-            <section id="menu" className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="mb-12 text-center">
-                        <h2 className="text-3xl font-bold text-gray-900 md:text-4xl dark:text-white">
-                            Menu Của Chúng Tôi
-                        </h2>
-                        <p className="mt-4 text-gray-600 dark:text-gray-400">
-                            Chọn thương hiệu yêu thích của bạn
-                        </p>
-                    </div>
+            {/* ─── Brand Grid ─── */}
+            <section className="px-4 pb-24">
+                <div className="container mx-auto max-w-4xl">
 
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {brands.map((brand: Brand) => (
-                            <Link
-                                href={`/buy/${toSlug(brand.name)}?brandId=${brand.id}`}
-                                key={brand.id}
-                                className="group relative overflow-hidden rounded-2xl bg-white p-1 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-900"
-                            >
-                                <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity group-hover:opacity-100" />
-                                <div className="relative flex h-full flex-col p-6">
-                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-3xl dark:bg-blue-900/30">
-                                        🥤
+                    {/* Subtle label */}
+                    <p className="mb-8 text-center text-xs font-semibold uppercase tracking-widest text-blue-100/25">
+                        Chọn thương hiệu
+                    </p>
+
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {brands.map((brand: Brand, index: number) => {
+                            const accent = CARD_ACCENTS[index % CARD_ACCENTS.length]
+                            const emoji = BRAND_EMOJI[index % BRAND_EMOJI.length]
+
+                            return (
+                                <Link
+                                    href={`/buy/${toSlug(brand.name)}?brandId=${brand.id}`}
+                                    key={brand.id}
+                                    className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-white/6 bg-[#0d223a] p-5 ring-1 ring-transparent transition-all duration-300 hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl ${accent.ring} ${accent.glow}`}
+                                >
+                                    {/* Emoji icon */}
+                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/5 text-2xl ring-1 ring-white/8 transition-transform duration-300 group-hover:scale-105">
+                                        {emoji}
                                     </div>
-                                    <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                                        {brand.name}
-                                    </h3>
-                                    <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                                        Khám phá các loại đồ uống tuyệt vời từ{' '}
-                                        {brand.name}
-                                    </p>
-                                    <div className="mt-auto flex items-center text-sm font-medium text-blue-600 dark:text-blue-400">
-                                        Xem Menu
-                                        <span className="material-symbols-outlined ml-1 text-sm transition-transform group-hover:translate-x-1">
-                                            arrow_forward
-                                        </span>
+
+                                    {/* Text */}
+                                    <div className="flex-1 min-w-0">
+                                        <h2 className="truncate text-base font-semibold text-white transition-colors group-hover:text-blue-200">
+                                            {brand.name}
+                                        </h2>
+                                        <p className="mt-0.5 text-xs text-blue-100/35">
+                                            Xem menu →
+                                        </p>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
+
+                                    {/* Accent dot */}
+                                    <div className={`h-2 w-2 shrink-0 rounded-full opacity-40 transition-opacity duration-300 group-hover:opacity-100 ${accent.dot}`} />
+                                </Link>
+                            )
+                        })}
                     </div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="border-t border-gray-200 bg-white py-20 dark:border-gray-800 dark:bg-gray-900/50">
-                <div className="container mx-auto px-4">
-                    <div className="grid gap-8 md:grid-cols-3">
-                        <div className="text-center">
-                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-                                <span className="material-symbols-outlined text-3xl">
-                                    eco
-                                </span>
-                            </div>
-                            <h3 className="mb-2 text-xl font-bold dark:text-white">
-                                Nguyên Liệu Tươi
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Sử dụng 100% nguyên liệu tự nhiên, đảm bảo sức
-                                khỏe.
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                                <span className="material-symbols-outlined text-3xl">
-                                    bolt
-                                </span>
-                            </div>
-                            <h3 className="mb-2 text-xl font-bold dark:text-white">
-                                Giao Hàng Nhanh
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Đội ngũ giao hàng chuyên nghiệp, cam kết đúng
-                                giờ.
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
-                                <span className="material-symbols-outlined text-3xl">
-                                    grade
-                                </span>
-                            </div>
-                            <h3 className="mb-2 text-xl font-bold dark:text-white">
-                                Chất Lượng Cao
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Công thức độc quyền mang lại hương vị khó quên.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     )
 }
