@@ -15,11 +15,11 @@ export function CheckoutItem({ item }: CheckoutItemProps) {
                 />
             )}
             <div className="flex-1">
-                <div className="flex justify-between">
-                    <h4 className="line-clamp-1 font-medium text-white">
+                <div className="flex items-start justify-between gap-2">
+                    <h4 className="line-clamp-1 min-w-0 font-medium text-white">
                         {item.name}
                     </h4>
-                    <span className="text-sm text-gray-400">
+                    <span className="shrink-0 whitespace-nowrap text-sm text-gray-400">
                         {item.price.toLocaleString()} VND
                     </span>
                 </div>
