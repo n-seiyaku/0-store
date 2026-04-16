@@ -1,7 +1,8 @@
 'use client'
 
-import { Drink, Topping, Brand } from '@/src/lib/db/type'
-import { useState } from 'react'
+import { Drink, Topping, Brand, Size } from '@/src/lib/db/type'
+import { useState, useCallback } from 'react'
+import { getSizesByCategory } from '@/src/lib/sizeStore'
 import ProductGrid from '@/src/components/ProductGrid'
 import Addition from '@/src/app/buy/[brandName]/components/Addition'
 
@@ -14,6 +15,27 @@ export default function SearchClient({ drinks, toppings }: SearchClientProps) {
     const [selectedDrink, setSelectedDrink] = useState<
         (Drink & { brand: Brand; hasTopping: boolean }) | null
     >(null)
+
+    // Cache sizes per category - fetch once and reuse
+    const [sizesCache, setSizesCache] = useState<Record<string, Size[]>>({})
+
+    // Fetch sizes for the selected drink's category if not already cached
+    const fetchSizesIfNeeded = useCallback(
+        async (categoryId: string) => {
+            if (sizesCache[categoryId]) return
+            const data = await getSizesByCategory(categoryId)
+            setSizesCache((prev) => ({ ...prev, [categoryId]: data }))
+        },
+        [sizesCache],
+    )
+
+    // When a drink is selected, also trigger size fetch
+    const handleSelectDrink = (
+        drink: Drink & { brand: Brand; hasTopping: boolean },
+    ) => {
+        setSelectedDrink(drink)
+        fetchSizesIfNeeded(drink.categoryId)
+    }
 
     // Group drinks by brand
     const groupedDrinks = drinks.reduce(
@@ -40,7 +62,7 @@ export default function SearchClient({ drinks, toppings }: SearchClientProps) {
                     </div>
                     <ProductGrid
                         drinks={brandDrinks}
-                        onSelectProduct={setSelectedDrink}
+                        onSelectProduct={handleSelectDrink}
                     />
                 </div>
             ))}
@@ -63,6 +85,7 @@ export default function SearchClient({ drinks, toppings }: SearchClientProps) {
                             )}
                             hasTopping={selectedDrink.hasTopping}
                             onClose={() => setSelectedDrink(null)}
+                            sizes={sizesCache[selectedDrink.categoryId] ?? []}
                         />
                     </div>
                 </div>
