@@ -3,6 +3,8 @@ import BuyClient from './components/BuyClient'
 import {
     getCategoriesByBrandId,
     getDrinksByCategory,
+    getBrands,
+    getBrandById,
 } from '@/src/lib/drinkStore'
 
 interface PageProps {
@@ -17,7 +19,12 @@ export default async function BuyPage(props: PageProps) {
     // Ensure brandId is a string, passing empty string if not present or array
     const validBrandId = typeof brandId === 'string' ? brandId : ''
 
-    const categories = await getCategoriesByBrandId(validBrandId)
+    // Fetch all brands for the brand switcher and current brand info
+    const [categories, allBrands, currentBrand] = await Promise.all([
+        getCategoriesByBrandId(validBrandId),
+        getBrands(),
+        getBrandById(validBrandId),
+    ])
 
     // Use categoryId from URL if valid, otherwise fall back to first category
     const validCategoryId =
@@ -37,6 +44,8 @@ export default async function BuyPage(props: PageProps) {
             initialDrinks={drinks}
             initialCategoryId={validCategoryId}
             toppings={toppings}
+            brands={allBrands}
+            currentBrand={currentBrand ?? null}
         />
     )
 }

@@ -15,6 +15,18 @@ export const getBrands = async (): Promise<Brand[]> => {
     }
 }
 
+export const getBrandById = async (
+    id: string,
+): Promise<Brand | undefined> => {
+    try {
+        const res = await db.select().from(brands).where(eq(brands.id, id))
+        return res[0]
+    } catch (error) {
+        console.error('Error fetching brand:', error)
+        return undefined
+    }
+}
+
 export const getDrinksByCategory = async (
     categoryId: string,
 ): Promise<Drink[]> => {

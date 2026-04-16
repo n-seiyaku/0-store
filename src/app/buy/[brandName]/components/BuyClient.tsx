@@ -1,6 +1,6 @@
 'use client'
 
-import { Drink, Topping, Category, Size } from '@/src/lib/db/type'
+import { Drink, Topping, Category, Size, Brand } from '@/src/lib/db/type'
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { getDrinksByCategory } from '@/src/lib/drinkStore'
@@ -14,6 +14,8 @@ interface BuyClientProps {
     initialDrinks: Drink[]
     initialCategoryId: string
     toppings: Topping[]
+    brands: Brand[]
+    currentBrand: Brand | null
 }
 
 export default function BuyClient({
@@ -21,6 +23,8 @@ export default function BuyClient({
     initialDrinks,
     initialCategoryId,
     toppings,
+    brands,
+    currentBrand,
 }: BuyClientProps) {
     const router = useRouter()
     const pathname = usePathname()
@@ -87,6 +91,8 @@ export default function BuyClient({
                             categories={categories}
                             selectedCategory={selectedCategory}
                             handleChangeCategory={handleChangeCategory}
+                            brands={brands}
+                            currentBrand={currentBrand}
                         />
                         <ProductGrid
                             drinks={drinks}
