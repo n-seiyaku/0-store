@@ -56,7 +56,7 @@ export function ContactForm({
                         type="text"
                         value={value.name}
                         onChange={(e) => handleChange('name', e.target.value)}
-                        placeholder="Nguyễn Văn A"
+                        placeholder="Hoàng Vũ Dạ Lan"
                         className={inputClass('name')}
                     />
                     {errors.name && (
@@ -79,7 +79,7 @@ export function ContactForm({
                         type="tel"
                         value={value.phone}
                         onChange={(e) => handleChange('phone', e.target.value)}
-                        placeholder="0912 345 678"
+                        placeholder="0000 000 000"
                         className={inputClass('phone')}
                     />
                     {errors.phone && (

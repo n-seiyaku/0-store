@@ -58,6 +58,7 @@ export const categoriesRelations = relations(categories, ({ one, many }) => ({
         references: [brands.id],
     }),
     drinks: many(drinks),
+    sizes: many(sizes),
 }))
 
 // --- 4. Bảng Drinks ---
@@ -82,7 +83,24 @@ export const drinksRelations = relations(drinks, ({ one }) => ({
     }),
 }))
 
-// --- 5. Bảng Toppings ---
+// --- 5. Bảng Sizes ---
+export const sizes = pgTable('sizes', {
+    id: serial('id').primaryKey(),
+    categoryId: uuid('category_id')
+        .notNull()
+        .references(() => categories.id, { onDelete: 'cascade' }),
+    size: varchar('size', { length: 2 }).notNull(),
+    additionPrice: integer('addition_price').notNull(),
+})
+
+export const sizesRelations = relations(sizes, ({ one }) => ({
+    category: one(categories, {
+        fields: [sizes.categoryId],
+        references: [categories.id],
+    }),
+}))
+
+// --- 6. Bảng Toppings ---
 export const toppings = pgTable(
     'toppings',
     {

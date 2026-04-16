@@ -7,6 +7,7 @@ import {
     orders,
     orderItems,
     loveSentences,
+    sizes,
 } from './schema'
 
 export type Topping = InferSelectModel<typeof toppings>
@@ -16,3 +17,4 @@ export type Brand = InferSelectModel<typeof brands>
 export type Drink = InferSelectModel<typeof drinks>
 export type Order = InferSelectModel<typeof orders>
 export type OrderItem = InferSelectModel<typeof orderItems>
+export type Size = InferSelectModel<typeof sizes>

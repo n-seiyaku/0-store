@@ -1,6 +1,6 @@
 'use client'
 
-import { Drink, Topping } from '@/src/lib/db/type'
+import { Drink, Size, Topping } from '@/src/lib/db/type'
 import { useState } from 'react'
 import { useCart } from '@/src/context/CartContext'
 import { CartItem } from '@/src/type/cart-item.types'
@@ -11,6 +11,7 @@ interface AdditionProps {
     onClose: () => void
     initialItem?: CartItem
     hasTopping: boolean
+    sizes: Size[]
 }
 
 export default function Addition({
@@ -19,8 +20,13 @@ export default function Addition({
     onClose,
     initialItem,
     hasTopping,
+    sizes: availableSizes,
 }: AdditionProps) {
-    const [size, setSize] = useState(initialItem?.size || 'medium')
+    // Default size: first from prop if not editing an existing item
+    const [size, setSize] = useState<string>(
+        initialItem?.size ||
+            (availableSizes.length > 0 ? availableSizes[0].size : ''),
+    )
     const [ice, setIce] = useState(initialItem?.ice || 'Đá bình thường')
     const [sugar, setSugar] = useState(initialItem?.sugar || '100%')
     const [selectedToppings, setSelectedToppings] = useState<Topping[]>(
@@ -29,14 +35,15 @@ export default function Addition({
     const [note, setNote] = useState(initialItem?.note || '')
     const { addToCart, updateItem } = useCart()
 
-    const SIZE_LARGE_PRICE = 3000
-    const sizes = ['medium', 'large']
     const iceOptions = ['Nhiều đá', 'Đá bình thường', 'Ít đá', 'Không đá']
     const sugarOptions = ['100%', '70%', '50%', '30%', '0%']
 
     const calculateTotal = () => {
         let total = Number(drink.price)
-        if (size === 'large') total += SIZE_LARGE_PRICE
+
+        // Add price based on selected size
+        const selectedSize = availableSizes.find((s) => s.size === size)
+        if (selectedSize) total += Number(selectedSize.additionPrice)
 
         // Add toppings price
         const toppingsPrice = toppings
@@ -96,27 +103,38 @@ export default function Addition({
                     </button>
                 </div>
 
-                {/* Size Section */}
-                <div className="mb-6">
-                    <span className="mb-3 block text-sm font-medium text-gray-400">
-                        Size
-                    </span>
-                    <div className="flex gap-3">
-                        {sizes.map((value) => (
-                            <button
-                                key={value}
-                                onClick={() => setSize(value)}
-                                className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold capitalize transition-all ${
-                                    size === value
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white'
-                                }`}
-                            >
-                                {value}
-                            </button>
-                        ))}
+                {/* Size Section - dynamic from DB */}
+                {availableSizes.length > 0 && (
+                    <div className="mb-6">
+                        <span className="mb-3 block text-sm font-medium text-gray-400">
+                            Size
+                        </span>
+                        <div className="flex gap-3">
+                            {availableSizes.map((s) => (
+                                <button
+                                    key={s.id}
+                                    onClick={() => setSize(s.size)}
+                                    className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
+                                        size === s.size
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white'
+                                    }`}
+                                >
+                                    <span>{s.size}</span>
+                                    {Number(s.additionPrice) > 0 && (
+                                        <span className="ml-1 text-xs opacity-75">
+                                            +
+                                            {Number(
+                                                s.additionPrice,
+                                            ).toLocaleString('vi-VN')}
+                                            d
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Ice Section */}
                 <div className="mb-6">
