@@ -3,9 +3,10 @@
 import { useCart } from '@/src/context/CartContext'
 import { useState, useRef, useEffect } from 'react'
 import { CartItem } from '@/src/type/cart-item.types'
-import { Drink, Topping, Category } from '@/src/lib/db/type'
+import { Drink, Topping, Category, Size } from '@/src/lib/db/type'
 import { getCategoryById } from '@/src/lib/drinkStore'
 import { getAllToppingsByBrandId } from '@/src/lib/toppingStore'
+import { getSizesByCategory } from '@/src/lib/sizeStore'
 import Addition from '@/src/app/buy/[brandName]/components/Addition'
 import { CartItemCard } from './CartItemCard'
 import { CartEmptyState } from './CartEmptyState'
@@ -23,11 +24,13 @@ export default function Cart() {
 
     const [editingItem, setEditingItem] = useState<CartItem | null>(null)
     const [availableToppings, setAvailableToppings] = useState<Topping[]>([])
+    const [availableSizes, setAvailableSizes] = useState<Size[]>([])
     const [currentDrink, setCurrentDrink] = useState<Drink | null>(null)
     const [hasTopping, setHasTopping] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const categoryCache = useRef<Map<string, Category>>(new Map())
     const toppingsCache = useRef<Map<string, Topping[]>>(new Map())
+    const sizesCache = useRef<Map<string, Size[]>>(new Map())
 
     useEffect(() => {
         if (!isOpen) {
@@ -54,8 +57,16 @@ export default function Cart() {
                     toppingsCache.current.set(category.brandId, toppings)
                 }
 
+                // Fetch sizes theo categoryId
+                let sizeList = sizesCache.current.get(item.categoryId)
+                if (!sizeList) {
+                    sizeList = await getSizesByCategory(item.categoryId)
+                    sizesCache.current.set(item.categoryId, sizeList)
+                }
+
                 setCurrentDrink(item)
                 setAvailableToppings(toppings)
+                setAvailableSizes(sizeList)
                 setHasTopping(category.hasTopping)
                 setEditingItem(item)
             }
@@ -131,6 +142,7 @@ export default function Cart() {
                         <Addition
                             drink={currentDrink}
                             toppings={availableToppings}
+                            sizes={availableSizes}
                             initialItem={editingItem || undefined}
                             onClose={() => setEditingItem(null)}
                             hasTopping={hasTopping}
