@@ -22,9 +22,9 @@ const robotoMono = Roboto_Mono({
 })
 
 export const metadata: Metadata = {
-    title: 'Trà Sữa 0 Ngàn - Thưởng thức hương vị đậm đà',
+    title: 'Trà Sữa 0 Ngàn — Đặt món online, giao hàng 15 phút',
     description:
-        'Đặt trà sữa trực tuyến từ các thương hiệu hàng đầu. Menu đa dạng, nguyên liệu tươi ngon, đặt hàng dễ dàng.',
+        'Khám phá menu trà sữa đa dạng từ các thương hiệu yêu thích. Đặt hàng nhanh, giao tận nơi trong 15 phút với nguyên liệu tươi ngon 100%.',
 }
 
 export default function RootLayout({
